@@ -72,10 +72,12 @@ cat("\nInitialization complete. All required packages are installed.\n")
 
 ```r
 # main.R
-if (!requireNamespace("ggplot2", quietly = TRUE)) {
-  install.packages("ggplot2", repos = "https://cloud.r-project.org")
-}
+# --- Libraries ---
+library(readr)
 library(ggplot2)
+library(dplyr)
+library(purrr)
+library(gridExtra)
 
 # ---------------------------
 # Config (edit these two only)
