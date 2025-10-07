@@ -27,7 +27,9 @@ These are the main CLI commands you can use:
 - **dispatch** – Submits or runs workflows  
 - **login** – Authenticates your Accelerator session  
 - **upload** – Uploads local files/folders to the Accelerator  
-- **validate** – Validates workflow configuration files  
+- **copy** – Download from Accelerator to local files/folders
+- **validate** – Validates any role for the given dataset
+
 
 ---
 
