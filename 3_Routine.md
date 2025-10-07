@@ -3,9 +3,9 @@
 This guide shows a minimal, reproducible setup to run an R script on Accelerator using **ACCLI**’s `WKubeTask`.  
 You’ll create three files and then dispatch the job:
 
-- `test.R` — the R analysis (reads GPP/NPP CSV from Accelerator input, saves plots to output).
+- `main.R` — the R analysis (reads GPP/NPP CSV from Accelerator input, saves plots to output).
 - `init.R` — one‑time package installer for R.
-- `wkube.py` — the job configuration used by ACCLI to run `test.R` on Accelerator.
+- `wkube.py` — the job configuration used by ACCLI to run `main.R` on Accelerator.
 
 > ✅ Input is expected at `/code/input/test.csv` (mapped from your Accelerator storage).  
 > ✅ All plots and outputs are written to `/code/plots/` (mapped back to Accelerator).
@@ -16,7 +16,7 @@ You’ll create three files and then dispatch the job:
 
 ```
 my_r_job/
-├─ test.R
+├─ main.R
 ├─ init.R
 ├─ wkube.py
 └─ (optional) test.csv  # only for local dry-runs
@@ -60,16 +60,16 @@ if (all(success)) {
 }
 ```
 
-> You can run `Rscript init.R` inside the job as a pre-step, or bake these into your base image. For now, `wkube.py` runs only `test.R`, which will work if `ggplot2` is already available in the `R4_4` stack.
+> You can run `Rscript init.R` inside the job as a pre-step, or bake these into your base image. For now, `wkube.py` runs only `main.R`, which will work if `ggplot2` is already available in the `R4_4` stack.
 
 ---
 
-### B) `test.R` — analysis script
+### B) `main.R` — analysis script
 
 > **Important fix**: This version consistently writes to `output_root <- "/code/plots/"` and uses `file.path()` so that the output mapping in `wkube.py` captures all generated files.
 
 ```r
-# test.R
+# main.R
 suppressPackageStartupMessages(library(ggplot2))
 
 # ---------------------------
@@ -176,7 +176,7 @@ myroutine = WKubeTask(
     name="test_rscript",
     job_folder='./',
     base_stack='R4_4',
-    command="Rscript test.R",
+    command="Rscript main.R",
     required_cores=1,
     required_ram=1024*1024*512,
     required_storage_local=1024*1024*2,
@@ -204,7 +204,7 @@ From the folder containing `wkube.py`:
 accli dispatch demo myroutine
 `
 
-> The job uses the `R4_4` base stack and runs `Rscript test.R` with the mappings you set.
+> The job uses the `R4_4` base stack and runs `Rscript main.R` with the mappings you set.
 
 ---
 
@@ -212,7 +212,7 @@ accli dispatch demo myroutine
 ## 5) Troubleshooting
 
 - **`Input file not found`**: Confirm the CSV path exists in the mapped input (`accli ls <your acc path>`) and that `wkube.py` points to that path.
-- **No plots in `acc://out`**: Ensure `test.R` writes under `/code/plots/` (this guide already does). Check `output_mappings` in `wkube.py`.
+- **No plots in `acc://out`**: Ensure `main.R` writes under `/code/plots/` (this guide already does). Check `output_mappings` in `wkube.py`.
 - **Package errors**: Run `Rscript init.R` inside your stack or add the packages to your base image. The public CRAN mirror is set in `init.R`.
 - **Timeouts**: Increase `timeout` in `wkube.py` (e.g., `timeout=3*60*60`).
 - **Memory**: For larger data, raise `required_ram` (e.g., `2 * 1024 * 1024 * 1024`).
@@ -221,7 +221,7 @@ accli dispatch demo myroutine
 
 ## 6) Summary
 
-1. Put `test.R`, `init.R`, `wkube.py` in a folder.
+1. Put `main.R`, `init.R`, `wkube.py` in a folder.
 2. Upload `test.csv` to the Accelerator path used in `input_mappings`.
 3. `accli dispatch . myroutine`
 4. Download results from `acc://out` (or your chosen output path).
