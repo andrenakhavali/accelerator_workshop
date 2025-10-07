@@ -28,6 +28,7 @@ No additional fields or mappings are required.
 1. Simply click **“Dispatch Routine.”**  
 2. The system will create your RStudio container and start it automatically.  
 3. Once the container is ready, click **“Jobs”** to access your environment.
+4. Click on the link to open the Rstudio 
 
 ---
 
