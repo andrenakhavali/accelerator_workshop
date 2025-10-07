@@ -9,7 +9,7 @@ This guide explains how to launch an **RStudio environment** directly from the *
 1. Go to [https://accelerator.iiasa.ac.at](https://accelerator.iiasa.ac.at)
 2. In the left menu, select **Routines → Inbuilt**.
 3. From the list, choose **“WKube RStudio.”**
-4. Click **“Run Routine.”**
+4. Click **“Routines.”**
 
 ---
 
