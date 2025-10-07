@@ -60,9 +60,6 @@ if (all(success)) {
 }
 ```
 
-> You can run `Rscript init.R` inside the job as a pre-step, or bake these into your base image. For now, `wkube.py` runs only `main.R`, which will work if `ggplot2` is already available in the `R4_4` stack.
-
----
 
 ### B) `main.R` — analysis script
 
