@@ -220,7 +220,7 @@ accli dispatch demo myroutine
 
 1. Put `main.R`, `init.R`, `wkube.py` in a folder.
 2. Upload `test.csv` to the Accelerator path used in `input_mappings`.
-3. `accli dispatch . myroutine`
+3. `accli dispatch demo myroutine`
 4. Download results from `acc://out` (or your chosen output path).
 
 Happy running! 🚀
