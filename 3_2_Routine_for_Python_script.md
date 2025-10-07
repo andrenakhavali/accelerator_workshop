@@ -4,11 +4,11 @@ This guide shows a minimal, reproducible setup to run a **Python** script on Acc
 
 You’ll create three files and then dispatch the job:
 
-- `main.py` — the Python analysis (reads **/code/input/test.csv** and writes plots/results to **/code/plots/**).
+- `main.py` — the Python analysis (reads **/code/input/test_file.csv** and writes plots/results to **/code/plots/**).
 - `requirements.txt` — one‑time Python dependency spec.
 - `wkube.py` — the job configuration used by ACCLI to run `main.py` on Accelerator.
 
-> ✅ Input is expected at **`/code/input/test.csv`** (mapped from your Accelerator storage).  
+> ✅ Input is expected at **`/code/input/test_file.csv`** (mapped from your Accelerator storage).  
 > ✅ All plots and outputs are written to **`/code/plots/`** (mapped back to Accelerator).  
 > ✅ When using a predefined `base_stack`, the working directory inside the job is **`/code`**. If you build a custom image, you can choose a different workdir.
 
@@ -21,7 +21,7 @@ my_py_job/
 ├─ main.py
 ├─ requirements.txt
 ├─ wkube.py
-└─ (optional) test.csv  # only for local dry-runs
+└─ (optional) test_file.csv  # only for local dry-runs
 ```
 
 > You’ll upload/download data to/from Accelerator using ACCLI mappings (see steps below).
@@ -115,7 +115,7 @@ corr = df[["GPP", "NPP"]].corr().iloc[0, 1]
 print(f"Correlation coefficient (GPP vs NPP): {corr:.3f}")
 
 # Save a processed copy (example: unchanged, but validated)
-df.to_csv(os.path.join(OUTPUT_ROOT, "processed_test.csv"), index=False)
+df.to_csv(os.path.join(OUTPUT_ROOT, "processed_test_file.csv"), index=False)
 
 print("Script execution completed successfully! Plots saved in /code/plots/")
 ```
@@ -140,7 +140,7 @@ myroutine = WKubeTask(
     required_storage_workflow=1024*1024,
     timeout=60*60,
     conf={
-        # Map your Accelerator bucket/folder containing test.csv to /code/input/
+        # Map your Accelerator bucket/folder containing test_file.csv to /code/input/
         "input_mappings": "acc://demo/xyz/:/code/input/",
         # Map /code/plots/ back to an Accelerator path (change 'out' to your target)
         "output_mappings": "/code/plots/:acc://out"
@@ -177,7 +177,7 @@ The job runs `python main.py` in the `Python3_7` base stack.
 ## 5) Summary
 
 1. Put `main.py`, `requirements.txt`, `wkube.py` in a folder.
-2. Upload `test.csv` to the Accelerator path used in `input_mappings`.
+2. Upload `test_file.csv` to the Accelerator path used in `input_mappings`.
 3. `accli dispatch . myroutine`
 4. Download results from `acc://out` (or your chosen output path).
 
