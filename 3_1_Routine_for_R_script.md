@@ -69,7 +69,10 @@ cat("\nInitialization complete. All required packages are installed.\n")
 
 ```r
 # main.R
-suppressPackageStartupMessages(library(ggplot2))
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2", repos = "https://cloud.r-project.org")
+}
+library(ggplot2)
 
 # ---------------------------
 # Config (edit these two only)
