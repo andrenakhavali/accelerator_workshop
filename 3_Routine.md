@@ -189,7 +189,7 @@ myroutine = WKubeTask(
 >
 > - `input_mappings`: where `test.csv` resides on Accelerator (e.g., `acc://(porject name space)/(input folder on accelerator)/`).
 > - `output_mappings`: where you want plots/results to land on Accelerator (e.g., `acc://(output folder)/`).
-
+> - `/code`: When using a predefined base_stack, the default working directory is always set to /code. If you are building a custom Docker image, you can define any working directory you prefer in your environment settings. 
 ---
 
 
