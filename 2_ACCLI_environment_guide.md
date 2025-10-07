@@ -18,6 +18,7 @@ Commands:
   dispatch
   login
   upload
+  copy
   validate
 ```
 
