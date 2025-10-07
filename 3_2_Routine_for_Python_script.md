@@ -38,7 +38,7 @@ matplotlib==3.5.3
 numpy==1.21.6
 ```
 
-> The official Python base stacks generally include Python and `pip`. These two packages are lightweight and widely available.
+> The official Python base stacks generally include Python and `pip`. These three packages are lightweight and widely available.
 
 ---
 
