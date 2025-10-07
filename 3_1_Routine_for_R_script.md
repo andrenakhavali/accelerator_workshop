@@ -31,6 +31,7 @@ my_r_job/
 ### A) `init.R` — one‑time R package install
 
 ```r
+
 # List of required packages
 required_packages <- c(
   "readr",      # For fast reading of rectangular data
@@ -63,6 +64,7 @@ for (pkg in required_packages) {
 }
 
 cat("\nInitialization complete. All required packages are installed.\n")
+
 ```
 
 
