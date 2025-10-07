@@ -58,7 +58,7 @@ OUTPUT_ROOT = "/code/plots"
 
 os.makedirs(OUTPUT_ROOT, exist_ok=True)
 
-input_file = os.path.join(INPUT_ROOT, "test.csv")
+input_file = os.path.join(INPUT_ROOT, "test_file.csv")
 if not os.path.exists(input_file):
     sys.exit(f"Input file not found: {input_file}")
 
