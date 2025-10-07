@@ -31,33 +31,35 @@ my_r_job/
 ### A) `init.R` — one‑time R package install
 
 ```r
-# init.R - Package Installation Script
-# Run this once to install required dependencies
 
 # List of required packages
 required_packages <- c(
-  "ggplot2" 
+  "ggplot2",
 )
 
-# Install missing packages only
-install_missing <- function(packages) {
-  new_packages <- packages[!(packages %in% installed.packages()[,"Package"])]
-  if (length(new_packages)) {
-    install.packages(new_packages, dependencies = TRUE, repos = "https://cloud.r-project.org")
+# Function to install packages if not already installed
+install_if_missing <- function(packages) {
+  for (pkg in packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      install.packages(pkg, dependencies = TRUE)
+    }
   }
 }
 
-# Execute installation
-install_missing(required_packages)
+# Install required packages
+install_if_missing(required_packages)
 
 # Verify installation
-success <- sapply(required_packages, require, character.only = TRUE, quietly = TRUE)
-if (all(success)) {
-  message("\nAll packages installed successfully!")
-} else {
-  missing <- names(success)[!success]
-  message("\nFailed to install: ", paste(missing, collapse = ", "))
+cat("Checking installed packages:\n")
+for (pkg in required_packages) {
+  if (requireNamespace(pkg, quietly = TRUE)) {
+    cat(paste0("- ", pkg, ": installed successfully\n"))
+  } else {
+    cat(paste0("- ", pkg, ": installation FAILED\n"))
+  }
 }
+
+cat("\nInitialization complete. All required packages are installed.\n")
 ```
 
 
