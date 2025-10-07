@@ -1,14 +1,9 @@
 # Run a **GAMS** job on IIASA Accelerator with `WKubeTask`
 
-This guide shows a minimal, reproducible setup to run a **GAMS** script on Accelerator using **ACCLI**’s `WKubeTask`.
+This guide shows a minimal yet realistic setup to run a **GAMS** script on Accelerator using **ACCLI**’s `WKubeTask`.  
+You’ll create two files and dispatch the job directly to the Accelerator.
 
-You’ll create two files and then dispatch the job:
-
-- `main.gms` — the GAMS model (creates a CSV at `/code/output/test.csv`).
-- `wkube.py` — the job configuration used by ACCLI to run `main.gms` on Accelerator.
-
-> ✅ No input mapping required.  
-> ✅ Output CSV is written to **`/code/output/test.csv`** (mapped back to Accelerator).
+The exercise simulates a **mock GLOBIOM-style model output**: it defines regions, commodities, scenarios, and years; computes production, area, yield, prices, and emissions; and writes the results into a CSV file.
 
 ---
 
@@ -26,65 +21,95 @@ my_gams_job/
 
 ## 2) Prepare the files
 
-### A) `main.gms` — GAMS script (writes a CSV)
+### A) `main.gms` — GAMS script (generates a mock GLOBIOM-style CSV)
 
-> This example defines a small set, fills simple values for `GPP` and `NPP`, and writes them to `/code/output/test.csv` using `put`.
+> This example creates multi-dimensional data for regions, commodities, and scenarios, then calculates derived indicators and writes them to `/code/output/globiom_mock.csv`.
 
 ```gams
-* main.gms
-* Minimal GAMS script to produce /code/output/test.csv
-
-$ontext
-This script:
-  - Ensures /code/output exists (via a shell call)
-  - Creates a small data table (GPP, NPP) over a set i
-  - Writes a CSV with header: i,GPP,NPP
-$offtext
-
-* Make sure the output directory exists (requires a POSIX shell in the base stack)
 execute 'mkdir -p /code/output';
 
-Sets
-    i  / i1*i5 /;
+set r /EU27 USA BRA CHN/;
+set c /Wheat Maize Soy/;
+set s /Baseline Mitigation/;
+set y /y2020 y2030 y2040/;
 
-Parameters
-    GPP(i)  "Gross Primary Productivity (gC/m^2/yr)"
-    NPP(i)  "Net Primary Productivity (gC/m^2/yr)";
+parameter YearVal(y);
+YearVal(y) = 2020 + 10*(ord(y)-1);
 
-* Simple, deterministic example values
-GPP(i) = 1000 + ord(i)*50;  * i1..i5 => 1050, 1100, ...
-NPP(i) =  500 + ord(i)*30;  * i1..i5 =>  530, 560, ...
+scalar baseProd /2000/;
+scalar baseArea /500/;
+scalar basePrice /250/;
+scalar baseEmis /30/;
 
-* Write CSV
-File f / '/code/output/test.csv' /;
+parameter rMult(r);
+parameter cMult(c);
+parameter sMult(s);
+parameter yMult(y);
+
+rMult(r) = 1.00 + 0.05*(ord(r)-1);
+cMult(c) = 1.00 + 0.10*(ord(c)-1);
+sMult(s) = 1.00 - 0.03*(ord(s)-1);
+yMult(y) = 1.00 + 0.10*(ord(y)-1);
+
+parameter Production(r,c,s,y);
+parameter Area(r,c,s,y);
+parameter Yield(r,c,s,y);
+parameter Price(r,c,s,y);
+parameter Emissions(r,c,s,y);
+parameter EI(r,c,s,y);
+
+Production(r,c,s,y) = baseProd  * rMult(r) * cMult(c) * sMult(s) * yMult(y);
+Area(r,c,s,y)       = baseArea  * rMult(r) * cMult(c) * sMult(s) * (0.90 + 0.05*ord(y));
+Yield(r,c,s,y)      = Production(r,c,s,y) / Area(r,c,s,y);
+Price(r,c,s,y)      = basePrice * (0.95 + 0.02*ord(y)) * (1 - 0.03*(ord(s)-1));
+Emissions(r,c,s,y)  = baseEmis  * rMult(r) * cMult(c) * (1 - 0.10*(ord(s)-1)) * (0.98 + 0.01*ord(y));
+EI(r,c,s,y)         = (Emissions(r,c,s,y) * 1e6) / (Production(r,c,s,y) * 1e3);
+
+file f /'/code/output/globiom_mock.csv'/;
+f.nd = 3;
 put f;
-put 'i,GPP,NPP',/;
+put 'region,commodity,scenario,year,production_kT,area_kha,yield_t_per_ha,price_USD_per_t,emissions_MtCO2e,emiss_intensity_tCO2e_per_t'/;
 
-loop(i,
-  put i.tl:0, ',' , GPP(i):0:6, ',' , NPP(i):0:6, /;
+loop(r,
+  loop(c,
+    loop(s,
+      loop(y,
+        put r.tl:0, ',';
+        put c.tl:0, ',';
+        put s.tl:0, ',';
+        put YearVal(y):0:0, ',';
+        put Production(r,c,s,y):0:3, ',';
+        put Area(r,c,s,y):0:3, ',';
+        put Yield(r,c,s,y):0:3, ',';
+        put Price(r,c,s,y):0:3, ',';
+        put Emissions(r,c,s,y):0:3, ',';
+        put EI(r,c,s,y):0:3;
+        put /;
+      )
+    )
+  )
 );
 
 putclose f;
-
-display 'CSV written to /code/output/test.csv';
 ```
 
 ---
 
 ### B) `wkube.py` — job configuration
 
-> Adjust `base_stack` to your **GAMS** stack name on Accelerator (e.g., `GAMS_40`, `GAMS_43`, etc.). No input mapping needed. We map `/code/output/` to an Accelerator path (`acc://out`) to collect the CSV.
+> Adjust `base_stack` to your **GAMS** stack name on Accelerator (e.g., `GAMS_40`, `GAMS_43`, etc.).  
+> Output mapping ensures `/code/output/` content is saved to your Accelerator storage.
 
 ```python
 from accli import WKubeTask
 
 myroutine = WKubeTask(
-    name="test_gams_script",
+    name="globiom_mock_gams",
     job_folder='./',
-    base_stack='GAMS40_1__R4_0',          # <-- set to the GAMS base stack available on Accelerator
+    base_stack='GAMS40_1__R4_0',          
     command="gams main.gms lo=2",
     required_cores=1,
-    required_ram=1024*1024*256,  # 256 MB is plenty for this example
+    required_ram=1024*1024*256,  # 256 MB
     required_storage_local=1024*1024*2,
     required_storage_workflow=1024*1024,
     timeout=30*60,               # 30 minutes
@@ -100,67 +125,36 @@ myroutine = WKubeTask(
 ## 3) Dispatch the job
 
 From the folder containing `wkube.py`:
-```bash
-# Option A (recommended): ACCLI dispatch helper
-accli dispatch . myroutine
+```
+# ACCLI dispatch helper
+accli dispatch demo myroutine
 
-# Option B: plain Python
-python -c "from wkube import myroutine; myroutine.dispatch()"
 ```
 
 The job uses the GAMS base stack and runs `gams main.gms`.
 
 ---
 
-## 4) Retrieve the outputs
+## 4) Troubleshooting
 
-Your `wkube.py` maps `/code/output/` to `acc://out`. List or pull them:
-```bash
-accli ls acc://out
-accli pull acc://out ./outputs_local
-```
+- **`Cannot open /code/output/...`**  
+  → Ensure the GAMS stack supports shell commands like `mkdir`.  
+  If not, pre-create the directory or use a relative path (`File f / 'globiom_mock.csv' /;`) and map `/code/` to outputs.
 
-You should see `test.csv` in `./outputs_local/`.
+- **`base_stack not found`**  
+  → Verify the exact stack name available on your Accelerator instance.
 
----
-
-## 5) Quick local dry-run (optional)
-
-If you have GAMS locally, you can test the script without Accelerator:
-```bash
-# From the folder with main.gms
-gams main.gms lo=2
-
-# Check output
-cat /code/output/test.csv   # if you used absolute path in the script
-# or, if you change the file path to a relative one, check the local file instead
-```
-
-> If you prefer a relative path locally, change the line  
-> `File f / '/code/output/test.csv' /;`  
-> to  
-> `File f / 'test.csv' /;`  
-> and remove the `mkdir` line. On Accelerator we keep the absolute path so the output mapping picks it up.
-
----
-
-## 6) Troubleshooting
-
-- **`Cannot open /code/output/test.csv`**: Ensure your GAMS stack has a POSIX shell for the `mkdir` call. If not, either:
-  - Pre-create `/code/output/` via the container image/base stack, or
-  - Change the CSV path to a relative filename (e.g., `test.csv`) and map `/code/` to your output in `wkube.py`:
-    ```python
-    conf={"output_mappings": "/code/:acc://out"}
-    ```
-- **`base_stack` not found**: Use the exact GAMS stack name available on your Accelerator.
-- **No file in `acc://out`**: Confirm that the CSV path in `main.gms` matches the mapped directory in `wkube.py`.
+- **No output in `acc://out`**  
+  → Check that the CSV path inside `main.gms` matches the mapped directory in `wkube.py`.
 
 ---
 
 ## 7) Summary
 
-1. Put `main.gms` and `wkube.py` in a folder.  
-2. `accli dispatch . myroutine`  
-3. Download `test.csv` from `acc://out`.
+1. Create `main.gms` and `wkube.py`.  
+2. Dispatch with `accli dispatch . myroutine`.  
+3. Retrieve `globiom_mock.csv` from `acc://out`.  
+
+This example demonstrates how to **run and export structured GAMS model outputs** on IIASA Accelerator — an ideal pattern for small verification models, data generators, or reproducible simulation runs. 
 
 Happy running! 🚀
