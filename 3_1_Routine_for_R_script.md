@@ -36,7 +36,7 @@ my_r_job/
 
 # List of required packages
 required_packages <- c(
-#  "ggplot2"  # to save time we skip this step as the ggplot2 is already included in the base stack of R 4.4
+  "ggplot2" 
 )
 
 # Install missing packages only
