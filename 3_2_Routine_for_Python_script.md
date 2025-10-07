@@ -33,8 +33,9 @@ my_py_job/
 ### A) `requirements.txt` — Python packages
 
 ```txt
-pandas>=2.0
-matplotlib>=3.7
+pandas==1.3.5
+matplotlib==3.5.3
+numpy==1.21.6
 ```
 
 > The official Python base stacks generally include Python and `pip`. These two packages are lightweight and widely available.
