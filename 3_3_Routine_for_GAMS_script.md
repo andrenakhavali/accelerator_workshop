@@ -137,10 +137,6 @@ The job uses the GAMS base stack and runs `gams main.gms`.
 
 ## 4) Troubleshooting
 
-- **`Cannot open /code/output/...`**  
-  → Ensure the GAMS stack supports shell commands like `mkdir`.  
-  If not, pre-create the directory or use a relative path (`File f / 'globiom_mock.csv' /;`) and map `/code/` to outputs.
-
 - **`base_stack not found`**  
   → Verify the exact stack name available on your Accelerator instance.
 
@@ -149,10 +145,10 @@ The job uses the GAMS base stack and runs `gams main.gms`.
 
 ---
 
-## 7) Summary
+## 5) Summary
 
 1. Create `main.gms` and `wkube.py`.  
-2. Dispatch with `accli dispatch . myroutine`.  
+2. Dispatch with `accli dispatch demo myroutine`.  
 3. Retrieve `globiom_mock.csv` from `acc://out`.  
 
 This example demonstrates how to **run and export structured GAMS model outputs** on IIASA Accelerator — an ideal pattern for small verification models, data generators, or reproducible simulation runs. 
