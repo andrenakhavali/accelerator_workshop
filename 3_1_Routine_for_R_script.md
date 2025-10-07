@@ -7,7 +7,7 @@ You’ll create three files and then dispatch the job:
 - `init.R` — one‑time package installer for R.
 - `wkube.py` — the job configuration used by ACCLI to run `main.R` on Accelerator.
 
-> ✅ Input is expected at `/code/input/test.csv` (mapped from your Accelerator storage).  
+> ✅ Input is expected at `/code/input/test_file.csv` (mapped from your Accelerator storage).  
 > ✅ All plots and outputs are written to `/code/plots/` (mapped back to Accelerator).
 
 ---
@@ -19,7 +19,7 @@ my_r_job/
 ├─ main.R
 ├─ init.R
 ├─ wkube.py
-└─ (optional) test.csv  # only for local dry-runs
+└─ (optional) test_file.csv  # only for local dry-runs
 ```
 
 > You’ll upload/download data to/from Accelerator using ACCLI mappings (see steps below).
@@ -81,8 +81,8 @@ if (!dir.exists(output_root)) {
   cat("Created output root:", normalizePath(output_root), "\n")
 }
 
-# Input CSV expected at /code/input/test.csv
-input_file <- file.path(input_root, "test.csv")
+# Input CSV expected at /code/input/test_file.csv
+input_file <- file.path(input_root, "test_file.csv")
 if (!file.exists(input_file)) {
   stop("Input file not found: ", input_file)
 }
@@ -187,7 +187,7 @@ myroutine = WKubeTask(
 ```
 > This is your uploaded `wkube.py`. Adjust the two mappings to your actual Accelerator buckets/paths:
 >
-> - `input_mappings`: where `test.csv` resides on Accelerator (e.g., `acc://(porject name space)/(input folder on accelerator)/`).
+> - `input_mappings`: where `test_file.csv` resides on Accelerator (e.g., `acc://(porject name space)/(input folder on accelerator)/`).
 > - `output_mappings`: where you want plots/results to land on Accelerator (e.g., `acc://(output folder)/`).
 > - `/code`: When using a predefined base_stack, the default working directory is always set to /code. If you are building a custom Docker image, you can define any working directory you prefer in your environment settings. 
 ---
@@ -219,7 +219,7 @@ accli dispatch demo myroutine
 ## 6) Summary
 
 1. Put `main.R`, `init.R`, `wkube.py` in a folder.
-2. Upload `test.csv` to the Accelerator path used in `input_mappings`.
+2. Upload `test_file.csv` to the Accelerator path used in `input_mappings`.
 3. `accli dispatch demo myroutine`
 4. Download results from `acc://out` (or your chosen output path).
 
