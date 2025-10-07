@@ -131,7 +131,7 @@ from accli import WKubeTask
 myroutine = WKubeTask(
     name="test_python_script",
     job_folder='./',
-    base_stack='Python3_7',   
+    base_stack='PYTHON3_7',   
     command="python main.py",
     required_cores=1,
     required_ram=1024*1024*512,
