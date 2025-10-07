@@ -31,10 +31,13 @@ my_r_job/
 ### A) `init.R` — one‑time R package install
 
 ```r
-
 # List of required packages
 required_packages <- c(
-  "ggplot2",
+  "readr",      # For fast reading of rectangular data
+  "ggplot2",     # For creating elegant data visualizations
+  "dplyr",       # For data manipulation and transformation
+  "purrr",       # For functional programming tools
+  "gridExtra"    # For arranging multiple grid-based plots
 )
 
 # Function to install packages if not already installed
