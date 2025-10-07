@@ -81,7 +81,7 @@ from accli import WKubeTask
 myroutine = WKubeTask(
     name="test_gams_script",
     job_folder='./',
-    base_stack='GAMS',          # <-- set to the GAMS base stack available on Accelerator
+    base_stack='GAMS40_1__R4_0',          # <-- set to the GAMS base stack available on Accelerator
     command="gams main.gms lo=2",
     required_cores=1,
     required_ram=1024*1024*256,  # 256 MB is plenty for this example
