@@ -222,7 +222,7 @@ accli dispatch demo myroutine
 ## 6) Summary
 
 1. Put `test.R`, `init.R`, `wkube.py` in a folder.
-2. Upload `npp_gpp_data.csv` to the Accelerator path used in `input_mappings`.
+2. Upload `test.csv` to the Accelerator path used in `input_mappings`.
 3. `accli dispatch . myroutine`
 4. Download results from `acc://out` (or your chosen output path).
 
