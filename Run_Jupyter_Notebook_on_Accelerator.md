@@ -9,7 +9,7 @@ This guide explains how to launch a **Jupyter Notebook** directly from the **Acc
 1. Go to [https://accelerator.iiasa.ac.at](https://accelerator.iiasa.ac.at)
 2. In the left menu, select **Routines → Inbuilt**.
 3. From the list, choose **“WKube Jupyter Notebooks.”**
-4. Click **“Run Routine.”**
+4. Click **“Routines”**
 
 ---
 
@@ -54,7 +54,7 @@ After filling the required fields:
 
 1. Click **“Dispatch Routine.”**  
 2. The system will start your Jupyter Notebook container.  
-3. Once ready, click **“Open JupyterLab”** to launch your environment.  
+3. Once ready, click **“JOBS”** to launch your environment.  
 4. Inside JupyterLab, open or upload your `.ipynb` file and start working.
 
 ---
