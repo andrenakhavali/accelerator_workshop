@@ -170,6 +170,7 @@ message(sprintf("Correlation coefficient (GPP vs NPP): %.3f", correlation))
 write.csv(data, file.path(output_root, "processed_npp_gpp_data.csv"), row.names = FALSE)
 
 message("Script execution completed successfully! Plots saved in /code/plots/")
+
 ```
 
 ---
