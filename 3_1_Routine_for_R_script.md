@@ -32,13 +32,11 @@ my_r_job/
 
 ```r
 
+# init.R - Initialization script for R 4.4 base stack
+
 # List of required packages
 required_packages <- c(
-  "readr",      # For fast reading of rectangular data
-  "ggplot2",     # For creating elegant data visualizations
-  "dplyr",       # For data manipulation and transformation
-  "purrr",       # For functional programming tools
-  "gridExtra"    # For arranging multiple grid-based plots
+#no library required for this practice 
 )
 
 # Function to install packages if not already installed
@@ -74,12 +72,7 @@ cat("\nInitialization complete. All required packages are installed.\n")
 
 ```r
 # main.R
-# --- Libraries ---
-library(readr)
-library(ggplot2)
-library(dplyr)
-library(purrr)
-library(gridExtra)
+# --- No extra libraries needed ---
 
 # ---------------------------
 # Config (edit these two only)
@@ -140,30 +133,6 @@ boxplot(data[, c("GPP", "NPP")],
         ylab = "Value (gC/m²/year)",
         col = c("lightblue", "lightpink"))
 dev.off()
-
-# ------- ggplot2 figures (saved, not printed) -------
-if ("ggplot2" %in% rownames(installed.packages())) {
-  ggplot_scatter <- ggplot(data, aes(x = GPP, y = NPP)) +
-    geom_point(color = "blue", size = 2) +
-    geom_smooth(method = "lm", se = TRUE, color = "red") +
-    labs(title = "NPP vs GPP Relationship with Linear Regression",
-         x = "GPP (gC/m²/year)",
-         y = "NPP (gC/m²/year)") +
-    theme_minimal()
-
-  ggsave(filename = file.path(output_root, "npp_vs_gpp_scatter_ggplot.png"),
-         plot = ggplot_scatter, width = 8, height = 6, dpi = 300)
-
-  ggplot_density <- ggplot(data, aes(x = GPP)) +
-    geom_density(fill = "lightgreen", alpha = 0.7) +
-    labs(title = "Density Distribution of GPP Values",
-         x = "GPP (gC/m²/year)",
-         y = "Density") +
-    theme_minimal()
-
-  ggsave(filename = file.path(output_root, "gpp_density.png"),
-         plot = ggplot_density, width = 8, height = 6, dpi = 300)
-}
 
 # ------- Correlation + data export -------
 correlation <- cor(data$GPP, data$NPP, use = "complete.obs")
