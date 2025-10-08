@@ -12,7 +12,8 @@ The exercise simulates a **mock GLOBIOM-style model output**: it defines regions
 ```
 my_gams_job/
 ├─ main.gms
-└─ wkube.py
+├─ wkube.py
+└─ init.R 
 ```
 
 > You’ll download results from Accelerator using the output mapping in `wkube.py`.
@@ -107,20 +108,62 @@ myroutine = WKubeTask(
     name="globiom_mock_gams",
     job_folder='./',
     base_stack='GAMS40_1__R4_0',          
-    command="gams main.gms lo=2",
+    command="gams main.gms",
     required_cores=1,
-    required_ram=1024*1024*256,  # 256 MB
-    required_storage_local=1024*1024*2,
-    required_storage_workflow=1024*1024,
+    required_ram=1024*1024*1024,  # 256 MB
+    required_storage_local=1024*1024*1024,
+    required_storage_workflow=1024*1024*1024,
     timeout=30*60,               # 30 minutes
     conf={
         # No input mappings required
         "output_mappings": "/code/output/:acc://out"
-    }
+    },
+   job_secrets={
+"gams_license": ""
+}
 )
 ```
 
 ---
+### C) `init.R` — Initialization script for R 4.4 base stack
+
+```r
+# init.R - Initialization script for R 4.4 base stack
+
+# List of required packages
+required_packages <- c(
+#no library required for this practice 
+)
+
+# Function to install packages if not already installed
+install_if_missing <- function(packages) {
+  for (pkg in packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      install.packages(pkg, dependencies = TRUE)
+    }
+  }
+}
+
+# Install required packages
+install_if_missing(required_packages)
+
+# Verify installation
+cat("Checking installed packages:
+")
+for (pkg in required_packages) {
+  if (requireNamespace(pkg, quietly = TRUE)) {
+    cat(paste0("- ", pkg, ": installed successfully
+"))
+  } else {
+    cat(paste0("- ", pkg, ": installation FAILED
+"))
+  }
+}
+
+cat("
+Initialization complete. All required packages are installed.
+")
+```
 
 ## 3) Dispatch the job
 
@@ -147,7 +190,7 @@ The job uses the GAMS base stack and runs `gams main.gms`.
 
 ## 5) Summary
 
-1. Create `main.gms` and `wkube.py`.  
+1. Create `main.gms`, `wkube.py` and `init.R`.  
 2. Dispatch with `accli dispatch demo myroutine`.  
 3. Retrieve `globiom_mock.csv` from `acc://out`.  
 
