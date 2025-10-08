@@ -84,7 +84,7 @@ To ensure your work is citable:
 ## 🏷️ License & Citation
 
 ```
-Andre Nakhavali, Rupesh Singh (2025). *Accelerator Workshop: instructions for IIASA Accelerator workflows*. GitHub repository, version 1.0.0. 
+Andre Nakhavali, Rupesh Singh (2025). *Accelerator Workshop: instructions for IIASA Accelerator workflows*. GitHub repository, version 1.0.0. DOI: DOI: 10.5281/zenodo.17292833
 ```
 
 ---
